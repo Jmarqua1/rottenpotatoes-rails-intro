@@ -11,10 +11,21 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @movies = Movie.all
-    sort = params[:sort]
-    
+    @movies = []
     @current = nil
+    sort = params[:sort]
+    checked_ratings = params[:ratings]
+    
+    if checked_ratings != nil
+      @movies = []
+      checked_ratings.each_key do |checked|
+       temp = Movie.where(rating: checked)
+        temp.each do |movie|
+          @movies << movie
+        end
+      end
+    end
+    
     if sort.eql?("title")
       @movies = @movies.sort_by {|movie| movie.title}
       @current = "title"
@@ -22,12 +33,15 @@ class MoviesController < ApplicationController
       @movies = @movies.sort_by {|movie| movie.release_date}
       @current = "release_date"
     end
+  
+    
     @all_ratings = []
-    Movie.all each do |movie|
-      unless @all_ratings.include(movie.rating)
+    Movie.all.each do |movie|
+      unless @all_ratings.include?(movie.rating)
         @all_ratings << movie.rating
       end
     end 
+    @all_ratings.sort!
   end
 
   def new
