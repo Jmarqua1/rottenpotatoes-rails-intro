@@ -22,7 +22,12 @@ class MoviesController < ApplicationController
       @movies = @movies.sort_by {|movie| movie.release_date}
       @current = "release_date"
     end
-      
+     @all_ratings = []
+    Movie.all each do |movie|
+      unless @all_ratings.include(movie.rating)
+        @all_ratings << movie.rating
+      end
+    end 
   end
 
   def new
@@ -52,5 +57,5 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
-
+  
 end
